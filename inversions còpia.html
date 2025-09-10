@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lectura</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/lectura.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1><a href="index.html">Eines Musicals</a></h1>
+    <button id="menu-toggle" aria-label="Obrir menú"><i class="fas fa-bars"></i></button>
+  </header>
+
+  <!-- Sidebar / Nav -->
+  <nav id="menu" class="menu">
+    <ul>
+      <li><a href="index.html">Inici</a></li>
+      <li><a href="#">Piano</a></li>
+      <li><a href="#">Harmonia</a></li>
+      <li><a href="lectura.html" class="active">Lectura Musical</a></li>
+      <li><a href="#">Dictats</a></li>
+    </ul>
+  </nav>
+<body>
+
+  <div class="container">
+    <h1>🎹 Indica les inversions d'acords</h1>
+
+    <div class="top-info">
+        <p id="punts">Punts: 0</p>
+        <p id="temps">Temps: -</p>
+    </div>
+
+    <p id="acordPregunta">Carregant...</p>
+    <p id="resultat"></p>
+
+    <input type="text" id="resposta" placeholder="Ex: E G C" autocomplete="off" />
+    <button id="btnSeguent">Següent Acord</button>
+
+    <p id="resum"></p>
+    <footer>
+    <p>Aquesta app de Lectura Musical ha estat creada per <strong>JJ Caro</strong> i integrada per <strong>Eugeni Corchero</strong>.</p>
+  </footer>
+  </div>
+
+  <audio id="soCorrecte" src="assets/sounds/correcte.mp3" preload="auto"></audio>
+  <audio id="soError" src="assets/sounds/error.mp3" preload="auto"></audio>
+  <audio id="soBenvinguda" src="assets/sounds/benvinguda.mp3" preload="auto"></audio>
+
+  <script>
+    const acordsPerNivell = {
+      facil: { "C": ["C", "E", "G"], "D": ["D", "F#", "A"], "E": ["E", "G#", "B"], "F": ["F", "A", "C"], "G": ["G", "B", "D"], "A": ["A", "C#", "E"], "B": ["B", "D#", "F#"], "Cm": ["C", "Eb", "G"], "Dm": ["D", "F", "A"], "Em": ["E", "G", "B"], "Fm": ["F", "Ab", "C"], "Gm": ["G", "Bb", "D"], "Am": ["A", "C", "E"], "Bm": ["B", "D", "F#"] },
+      mitja: { "F#": ["F#", "A#", "C#"], "Bb": ["Bb", "D", "F"], "Eb": ["Eb", "G", "Bb"], "Ab": ["Ab", "C", "Eb"], "Db": ["Db", "F", "Ab"], "Bbm": ["Bb", "Db", "F"], "Ebm": ["Eb", "Gb", "Bb"], "F#m": ["F#", "A", "C#"], "Abm": ["Ab", "Cb", "Eb"] },
+      dificil: { "G#m": ["G#", "B", "D#"], "G#": ["G#", "B#", "D#"], "C#m": ["C#", "E", "G#"], "A#m": ["A#", "C#", "E#"], "Dbm": ["Db", "Fb", "Ab"], "Cb": ["Cb", "Eb", "Gb"], "A#": ["A#", "C##", "E#"], "C#": ["C#", "E#", "G#"], "D#m": ["D#", "F#", "A#"], "Gb": ["Gb", "Bb", "Db"] }
+    };
+
+    let nivellActualJoc = 'facil', puntsNivellFacil = 0, puntsNivellMitja = 0;
+    let acordsActuals = {}, acordActual = "", notesActuals = [], inversioActual = 0;
+    let punts = 0, totalRespostes = 0;
+    const tempsMaxim = 15;
+    let temps = tempsMaxim, intervalId = null;
+    let respostaJaComprovada = false, acordsMostratsGlobal = [];
+
+    const btnSeguent = document.getElementById("btnSeguent");
+    const inputResposta = document.getElementById("resposta");
+    const acordPreguntaEl = document.getElementById("acordPregunta");
+    const resultatEl = document.getElementById("resultat");
+    const puntsEl = document.getElementById("punts");
+    const tempsEl = document.getElementById("temps");
+    const resumEl = document.getElementById("resum");
+
+    const soCorrecte = document.getElementById("soCorrecte");
+    const soError = document.getElementById("soError");
+    const soBenvinguda = document.getElementById("soBenvinguda");
+
+    // Nova funció clau per a aquest joc
+    function obtenirInversio(notes, numInversio) {
+      if (notes.length !== 3) return notes;
+      let inversio = notes.slice();
+      for (let i = 0; i < numInversio; i++) {
+        inversio.push(inversio.shift());
+      }
+      return inversio;
+    }
+
+    function obtenirAcordsNivellActual() {
+      if (nivellActualJoc === 'facil') return acordsPerNivell.facil;
+      if (nivellActualJoc === 'mitja') return acordsPerNivell.mitja;
+      return acordsPerNivell.dificil;
+    }
+
+    function nouAcord() {
+      if (totalRespostes >= 10) {
+        bloquejarSiAcabat();
+        return;
+      }
+
+      acordsActuals = obtenirAcordsNivellActual();
+      const candidats = Object.keys(acordsActuals).filter(n => !acordsMostratsGlobal.includes(n));
+      if (candidats.length === 0) {
+        acordsMostratsGlobal = acordsMostratsGlobal.filter(nom => !Object.keys(acordsActuals).includes(nom));
+        nouAcord();
+        return;
+      }
+      acordActual = candidats[Math.floor(Math.random() * candidats.length)];
+      const notesArrel = acordsActuals[acordActual];
+      
+      // Lògica per generar la pregunta d'inversió
+      inversioActual = Math.floor(Math.random() * 3); // 0: fonamental, 1: primera, 2: segona
+      notesActuals = obtenirInversio(notesArrel, inversioActual);
+      acordsMostratsGlobal.push(acordActual);
+
+      const tipus = ["l'ESTAT FONAMENTAL", "la PRIMERA INVERSIÓ", "la SEGONA INVERSIÓ"][inversioActual];
+      acordPreguntaEl.innerHTML = `Escriu  <strong>${tipus}</strong><br>de l'acord de ${acordActual}`;
+
+      resultatEl.innerHTML = "";
+      inputResposta.value = "";
+      tempsEl.textContent = `Temps: ${tempsMaxim}s`;
+      temps = tempsMaxim;
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(actualitzarTemps, 1000);
+      respostaJaComprovada = false;
+      btnSeguent.disabled = true;
+      inputResposta.disabled = false;
+      inputResposta.focus();
+    }
+
+    function actualitzarTemps() {
+      temps--;
+      tempsEl.textContent = `Temps: ${temps}s`;
+      if (temps <= 0 && !respostaJaComprovada) {
+        clearInterval(intervalId);
+        soError.play();
+        const missatgeHtml = `Temps esgotat!<br><span class="resposta-correcta-error">${notesActuals.join(" ")}</span>`;
+        mostrarResultat(false, missatgeHtml);
+        totalRespostes++;
+        respostaJaComprovada = true;
+        btnSeguent.disabled = false;
+        bloquejarSiAcabat();
+      }
+    }
+    
+    // Funció de neteja SENSE ordenar les notes, ja que l'ordre importa
+    function netejarNotes(arr) {
+      return arr.map(n => n.trim().toUpperCase());
+    }
+
+    function comprovar() {
+      if (respostaJaComprovada || temps <= 0) return;
+      const resposta = inputResposta.value.trim().split(/\s+/);
+      if (resposta.length !== 3 && resposta[0] !== '') {
+        mostrarResultat(false, "Introdueix 3 notes separades per espais.");
+        return;
+      } else if (resposta[0] === '') {
+        return;
+      }
+      
+      clearInterval(intervalId);
+      totalRespostes++;
+      respostaJaComprovada = true;
+
+      const respostaNeta = netejarNotes(resposta);
+      const correcteNeta = netejarNotes(notesActuals);
+      
+      // La comprovació compara l'ordre exacte de les notes
+      if (respostaNeta.join(" ") === correcteNeta.join(" ")) {
+        punts++;
+        soCorrecte.play();
+        let missatge = "Correcte!";
+        
+        if (nivellActualJoc === 'facil') {
+          puntsNivellFacil++;
+          if (puntsNivellFacil === 4) {
+            nivellActualJoc = 'mitja';
+            missatge = "Correcte! 🎉 Has pujat al nivell Mitjà!";
+          }
+        } else if (nivellActualJoc === 'mitja') {
+          puntsNivellMitja++;
+          if (puntsNivellMitja === 4) {
+            nivellActualJoc = 'dificil';
+            missatge = "Correcte! 🔥 Has pujat al nivell Difícil!";
+          }
+        }
+        
+        mostrarResultat(true, missatge);
+      } else {
+        soError.play();
+        const missatgeHtml = `Incorrecte.<br><span class="resposta-correcta-error">${notesActuals.join(" ")}</span>`;
+        mostrarResultat(false, missatgeHtml);
+      }
+      
+      puntsEl.textContent = `Punts: ${punts}`;
+      btnSeguent.disabled = false;
+      bloquejarSiAcabat();
+    }
+
+    function mostrarResultat(correcte, missatge) {
+      resultatEl.innerHTML = missatge;
+      resultatEl.style.color = correcte ? "var(--accent-green)" : "var(--accent-pink)";
+    }
+
+    function bloquejarSiAcabat() {
+      if (totalRespostes >= 10) {
+        resumEl.textContent = `Test acabat! Has fet ${punts} punts de 10. Enhorabona!`;
+        btnSeguent.disabled = true;
+        inputResposta.disabled = true;
+        if(intervalId) clearInterval(intervalId);
+        tempsEl.textContent = "Temps: 0s";
+      }
+    }
+
+    btnSeguent.addEventListener("click", () => {
+       if (totalRespostes < 10) nouAcord();
+    });
+
+    inputResposta.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if(!respostaJaComprovada) {
+            comprovar();
+        } else {
+            btnSeguent.click();
+        }
+      }
+    });
+
+    window.onload = () => {
+      soBenvinguda.play().catch(() => {});
+      nouAcord();
+    };
+  </script>
+</body>
+</html>
