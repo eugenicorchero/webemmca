@@ -21,11 +21,11 @@
   <!-- Sidebar / Nav -->
   <nav id="menu" class="menu">
     <ul>
-      <li><a href="#">Inici</a></li>
-      <li><a href="#">Piano</a></li>
-      <li><a href="#">Harmonia</a></li>
+      <li><a href="index.html" class="active">Inici</a></li>
+      <li><a href="piano.html">Piano</a></li>
+      <li><a href="harmonia.html">Harmonia</a></li>
       <li><a href="lectura.html">Lectura Musical</a></li>
-      <li><a href="#">Dictats</a></li>
+      <li><a href="dictats.html">Dictats</a></li>
     </ul>
   </nav>
 
@@ -38,26 +38,31 @@
         amb l’objectiu de facilitar la pràctica i l’estudi musical.
       </p>
       <div class="hero-image">
-        <img src="assets/pictures/harmonia 1.jpg" alt="Imatge hero de música" class="img-responsive">
+        <img src="assets/pictures/partitura 1.jpg" alt="Imatge hero de música" class="img-responsive" style="max-width: 220px; width: 100%; height: auto; margin: 1rem auto; display: block;">
       </div>
     </section>
 
     <section class="content-grid">
-      <div class="card" data-aos="fade-up" data-aos-delay="100">
+      <a href="piano.html" class="card" data-aos="fade-up">
         <img src="assets/pictures/piano 1.jpg" alt="Recurs de piano" class="img-responsive">
-        <h3>Recursos de Piano</h3>
-        <p>Exercicis i activitats per millorar la tècnica i la lectura pianística.</p>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="200">
+        <h3>Piano</h3>
+        <p>Recursos interactius per practicar el piano.</p>
+      </a>
+      <a href="harmonia.html" class="card" data-aos="fade-up" data-aos-delay="100">
         <img src="assets/pictures/harmonia 1.jpg" alt="Recurs d’harmonia" class="img-responsive">
         <h3>Harmonia</h3>
-        <p>Teoria i pràctica per entendre l’estructura de la música.</p>
-      </div>
-      <div class="card" data-aos="fade-up" data-aos-delay="300">
+        <p>Exercicis i eines per entendre l’harmonia musical.</p>
+      </a>
+      <a href="lectura.html" class="card" data-aos="fade-up" data-aos-delay="200">
         <img src="assets/pictures/lectura 2.jpg" alt="Recurs de lectura" class="img-responsive">
         <h3>Lectura Musical</h3>
-        <p>Activitats per agilitzar la lectura de partitures i ritmes.</p>
-      </div>
+        <p>Practica la lectura de notes amb eines interactives.</p>
+      </a>
+      <a href="dictats.html" class="card" data-aos="fade-up" data-aos-delay="300">
+        <img src="assets/pictures/partitura 1.jpg" alt="Recurs de dictats" class="img-responsive">
+        <h3>Dictats</h3>
+        <p>Millora la teva oïda musical amb dictats.</p>
+      </a>
     </section>
   </main>
 
@@ -65,7 +70,6 @@
     <p>&copy; 2025 Eugeni Corchero - Recursos musicals per a estudiants i professors.</p>
   </footer>
 
-  <script src="js/main.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
   <script>
     AOS.init();
