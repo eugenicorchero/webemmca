@@ -1,0 +1,8 @@
+[submodule "lectura-musical-app"]
+    path = lectura-musical-app
+    url = https://github.com/emmcaro/Lectura-sol-i-fa.git
+    branch = main
+    ignore = all
+[submodule "piano-app"]
+    path = piano-app
+    url =       
