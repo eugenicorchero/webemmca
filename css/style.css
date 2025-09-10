@@ -160,8 +160,9 @@ main {
 
 .card img {
   max-width: 100%;
+  max-height: 180px;
+  object-fit: cover;
   border-radius: 10px;
-  margin-bottom: 1rem;
 }
 
 .card h3 {
@@ -215,4 +216,13 @@ footer {
   .menu.open {
     left: 0;
   }
+}
+
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px; /* opcional, per a imatges de perfil */
 }
