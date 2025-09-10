@@ -89,9 +89,343 @@
   </script>
   <!-- INICIO SCRIPT APP INTEGRADA -->
   <script>
-    // ...Pega aquí el script JS de la app (el que tienes en lectura-musical-app/index.html)...
-    // (Ya lo tienes en el mensaje anterior, puedes copiarlo tal cual)
-  </script>
-  <!-- FIN SCRIPT APP INTEGRADA -->
+document.addEventListener('DOMContentLoaded', () => {
+    const canvas = document.getElementById('staffCanvas');
+    const ctx = canvas.getContext('2d');
+    const noteButtons = document.querySelectorAll('.note-button');
+    const feedbackArea = document.getElementById('feedback-area');
+    const scoreDisplay = document.getElementById('score');
+    const totalQuestionsDisplay = document.getElementById('totalQuestions');
+    const nextButton = document.getElementById('next-button');
+    const difficultyButtons = document.querySelectorAll('.difficulty-button');
+    const difficultyScreen = document.getElementById('difficulty-screen');
+    const gameContent = document.getElementById('game-content');
+    const finalScoreScreen = document.getElementById('final-score');
+    const finalScoreDisplay = document.getElementById('finalScoreDisplay');
+    const finalTimeDisplay = document.getElementById('finalTimeDisplay');
+    const playAgainButton = document.querySelector('.play-again-button');
+
+    const lineHeight = 20;
+    const staffTopY_Treble = 60;
+    const staffTopY_Bass = staffTopY_Treble + 5 * lineHeight + 50; 
+    const MAX_QUESTIONS = 10;
+
+    let score = 0;
+    let totalQuestions = 0;
+    let currentNotes = [];
+    let noteIndex = 0;
+    let currentDifficulty;
+    let startTime;
+
+    const rootStyles = getComputedStyle(document.documentElement);
+    const correctColor = rootStyles.getPropertyValue('--correct-color') || '#4CAF50';
+    const incorrectColor = rootStyles.getPropertyValue('--incorrect-color') || '#F44336';
+    const staffColor = '#333';
+
+    const NOTE_MAPPING = {
+        treble: {
+            "E4": staffTopY_Treble + lineHeight * 4,
+            "F4": staffTopY_Treble + lineHeight * 3.5,
+            "G4": staffTopY_Treble + lineHeight * 3,
+            "A4": staffTopY_Treble + lineHeight * 2.5,
+            "B4": staffTopY_Treble + lineHeight * 2,
+            "C5": staffTopY_Treble + lineHeight * 1.5,
+            "D5": staffTopY_Treble + lineHeight * 1,
+            "E5": staffTopY_Treble + lineHeight * 0.5,
+            "F5": staffTopY_Treble,
+            "G5": staffTopY_Treble - lineHeight * 0.5,
+            "A5": staffTopY_Treble - lineHeight * 1,
+            "B5": staffTopY_Treble - lineHeight * 1.5,
+        },
+        bass: {
+            "E2": staffTopY_Bass + lineHeight * 5,
+            "F2": staffTopY_Bass + lineHeight * 4.5,
+            "G2": staffTopY_Bass + lineHeight * 4,
+            "A2": staffTopY_Bass + lineHeight * 3.5,
+            "B2": staffTopY_Bass + lineHeight * 3,
+            "C3": staffTopY_Bass + lineHeight * 2.5,
+            "D3": staffTopY_Bass + lineHeight * 2,
+            "E3": staffTopY_Bass + lineHeight * 1.5,
+            "F3": staffTopY_Bass + lineHeight * 1,
+            "G3": staffTopY_Bass + lineHeight * 0.5,
+            "A3": staffTopY_Bass,
+            "C2": staffTopY_Bass + lineHeight * 6,
+        }
+    };
+
+    const NOTE_POOL = {
+        treble: Object.keys(NOTE_MAPPING.treble),
+        bass: Object.keys(NOTE_MAPPING.bass)
+    };
+    
+    const allNotesGlobal = [
+        ...NOTE_POOL.treble.map(n => ({ fullNote: n, clef: 'treble' })),
+        ...NOTE_POOL.bass.map(n => ({ fullNote: n, clef: 'bass' }))
+    ].sort((a, b) => {
+        const aPos = NOTE_MAPPING[a.clef][a.fullNote];
+        const bPos = NOTE_MAPPING[b.clef][b.fullNote];
+        if (a.clef === 'treble' && b.clef === 'bass') return -1;
+        if (a.clef === 'bass' && b.clef === 'treble') return 1;
+        return aPos - bPos;
+    });
+
+    function getNoteIndex(note) {
+        return allNotesGlobal.findIndex(n => n.fullNote === note.fullNote && n.clef === note.clef);
+    }
+    
+    function playSound(filename) {
+        const audio = new Audio(`sounds/${filename}`);
+        audio.play().catch(e => console.error("Error al reproduir el so:", e));
+    }
+    
+    function drawStaff() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.strokeStyle = staffColor;
+        ctx.lineWidth = 2;
+
+        for (let i = 0; i < 5; i++) {
+            const y = staffTopY_Treble + i * lineHeight;
+            ctx.beginPath();
+            ctx.moveTo(30, y);
+            ctx.lineTo(canvas.width - 30, y);
+            ctx.stroke();
+        }
+        ctx.font = '209px Arial';
+        ctx.fillStyle = staffColor;
+        ctx.fillText('𝄞', 40, staffTopY_Treble + lineHeight * 4.7);
+
+        for (let i = 0; i < 5; i++) {
+            const y = staffTopY_Bass + i * lineHeight;
+            ctx.beginPath();
+            ctx.moveTo(30, y);
+            ctx.lineTo(canvas.width - 30, y);
+            ctx.stroke();
+        }
+        ctx.font = '133px Arial';
+        ctx.fillText('𝄢', 40, staffTopY_Bass + lineHeight * 4.7 - 10);
+    }
+    
+    function drawWholeNote(x, y, clef) {
+        ctx.beginPath();
+        const radiusX = 18;
+        const radiusY = 10;
+        const rotationAngle = -Math.PI / 10; 
+        ctx.ellipse(x, y, radiusX, radiusY, rotationAngle, 0, 2 * Math.PI);
+        ctx.strokeStyle = staffColor;
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        
+        const lineOffset = 8;
+        ctx.lineWidth = 3;
+
+        const lowestStaffLineTreble = staffTopY_Treble + lineHeight * 4; 
+        const highestStaffLineTreble = staffTopY_Treble;                 
+        const lowestStaffLineBass = staffTopY_Bass + lineHeight * 4;     
+        const highestStaffLineBass = staffTopY_Bass;                     
+        
+        if (clef === 'treble') {
+            if (y > lowestStaffLineTreble) {
+                for (let currentY = lowestStaffLineTreble + lineHeight; currentY <= y; currentY += lineHeight) {
+                    ctx.beginPath();
+                    ctx.moveTo(x - radiusX - lineOffset, currentY);
+                    ctx.lineTo(x + radiusX + lineOffset, currentY);
+                    ctx.stroke();
+                }
+            } else if (y < highestStaffLineTreble) {
+                for (let currentY = highestStaffLineTreble; currentY >= y; currentY -= lineHeight) {
+                    if (currentY < highestStaffLineTreble) {
+                        ctx.beginPath();
+                        ctx.moveTo(x - radiusX - lineOffset, currentY);
+                        ctx.lineTo(x + radiusX + lineOffset, currentY);
+                        ctx.stroke();
+                    }
+                }
+            }
+        } else {
+            if (y > lowestStaffLineBass) {
+                for (let currentY = lowestStaffLineBass + lineHeight; currentY <= y; currentY += lineHeight) {
+                    ctx.beginPath();
+                    ctx.moveTo(x - radiusX - lineOffset, currentY);
+                    ctx.lineTo(x + radiusX + lineOffset, currentY);
+                    ctx.stroke();
+                }
+            } else if (y < highestStaffLineBass) {
+                for (let currentY = highestStaffLineBass; currentY >= y; currentY -= lineHeight) {
+                    if (currentY < highestStaffLineBass) {
+                        ctx.beginPath();
+                        ctx.moveTo(x - radiusX - lineOffset, currentY);
+                        ctx.lineTo(x + radiusX + lineOffset, currentY);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+    }
+    
+    function hasConsecutiveNotes(notes) {
+        if (notes.length < 3) return false;
+        
+        let sortedNotes = [...notes].sort((a,b) => getNoteIndex(a) - getNoteIndex(b));
+        
+        for (let i = 0; i <= sortedNotes.length - 3; i++) {
+            const idx1 = getNoteIndex(sortedNotes[i]);
+            const idx2 = getNoteIndex(sortedNotes[i+1]);
+            const idx3 = getNoteIndex(sortedNotes[i+2]);
+            if (Math.abs(idx2 - idx1) === 1 && Math.abs(idx3 - idx2) === 1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function drawNotes(notes) {
+        drawStaff();
+        const xPos = canvas.width / 2;
+        
+        let hasConsecutive = hasConsecutiveNotes(notes);
+        let consecutiveNoteIndex = -1;
+
+        if(hasConsecutive){
+            let sortedNotes = [...notes].sort((a,b) => getNoteIndex(a) - getNoteIndex(b));
+            for(let i = 0; i <= sortedNotes.length - 3; i++){
+                const idx1 = getNoteIndex(sortedNotes[i]);
+                const idx2 = getNoteIndex(sortedNotes[i+1]);
+                const idx3 = getNoteIndex(sortedNotes[i+2]);
+                if (Math.abs(idx2 - idx1) === 1 && Math.abs(idx3 - idx2) === 1) {
+                    consecutiveNoteIndex = getNoteIndex(sortedNotes[i+1]);
+                    break;
+                }
+            }
+        }
+
+        let previousY = null;
+
+        notes.forEach(note => {
+            const yPos = NOTE_MAPPING[note.clef][note.fullNote];
+            let currentX = xPos;
+            const currentNoteIndex = getNoteIndex(note);
+            
+            if (hasConsecutive && currentNoteIndex === consecutiveNoteIndex) {
+                 currentX += 30;
+            } else if (previousY !== null && Math.abs(yPos - previousY) === lineHeight / 2) {
+                currentX += 31;
+            }
+            
+            drawWholeNote(currentX, yPos, note.clef);
+            previousY = yPos;
+        });
+    }
+
+    function generateQuestion(numNotes) {
+        currentDifficulty = numNotes;
+        let validNotes = false;
+
+        do {
+            let tempNotes = [];
+            let availableNotes = [...allNotesGlobal];
+            
+            for (let i = 0; i < numNotes; i++) {
+                const randomIndex = Math.floor(Math.random() * availableNotes.length);
+                const selectedNote = availableNotes[randomIndex];
+                tempNotes.push(selectedNote);
+                availableNotes.splice(randomIndex, 1);
+            }
+            
+            currentNotes = tempNotes;
+            validNotes = !hasConsecutiveNotes(currentNotes);
+
+        } while (!validNotes);
+
+        currentNotes.sort((a, b) => {
+            const aPos = NOTE_MAPPING[a.clef][a.fullNote];
+            const bPos = NOTE_MAPPING[b.clef][b.fullNote];
+            return bPos - aPos;
+        });
+
+        drawNotes(currentNotes);
+        
+        feedbackArea.textContent = `Introdueix la nota més greu. Hi ha ${numNotes} notes.`;
+        noteButtons.forEach(b => b.disabled = false);
+        nextButton.classList.add('hidden');
+        noteIndex = 0;
+
+        if (totalQuestions < MAX_QUESTIONS) {
+            totalQuestions++;
+            totalQuestionsDisplay.textContent = totalQuestions;
+        }
+    }
+    
+    function handleNoteSelection(note) {
+        if (noteIndex < currentNotes.length) {
+            const currentCorrectNote = currentNotes[noteIndex].fullNote.charAt(0);
+            if (note === currentCorrectNote) {
+                feedbackArea.style.color = correctColor;
+                noteIndex++;
+                if (noteIndex === currentNotes.length) {
+                    feedbackArea.textContent = `Correcte! L'acord ha estat completat.`;
+                    playSound('correcte.mp3');
+                    checkAnswer();
+                } else {
+                    feedbackArea.textContent = `Correcte! Ara introdueix la següent nota (de greu a agut).`;
+                }
+            } else {
+                playSound('error.mp3');
+                feedbackArea.style.color = incorrectColor;
+                feedbackArea.textContent = `Incorrecte. La nota correcta era ${currentCorrectNote}.`;
+                checkAnswer();
+            }
+        }
+    }
+
+    function checkAnswer() {
+        if (noteIndex === currentNotes.length) {
+            score++;
+        }
+        scoreDisplay.textContent = score;
+        noteButtons.forEach(b => b.disabled = true);
+        nextButton.classList.remove('hidden');
+
+        if (totalQuestions === MAX_QUESTIONS) {
+            const endTime = Date.now();
+            const elapsedTime = endTime - startTime;
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = ((elapsedTime % 60000) / 1000).toFixed(1);
+            
+            nextButton.textContent = "Veure Puntuació Final";
+            nextButton.onclick = () => {
+                gameContent.classList.add('hidden');
+                finalScoreScreen.classList.remove('hidden');
+                finalScoreDisplay.textContent = `${score} de ${MAX_QUESTIONS}`;
+                finalTimeDisplay.textContent = `${minutes} minuts i ${seconds} segons`;
+            };
+        } else {
+            nextButton.textContent = "Següent Repte";
+            nextButton.onclick = () => generateQuestion(currentDifficulty);
+        }
+    }
+
+    difficultyButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            startTime = Date.now();
+            const numNotes = parseInt(btn.dataset.level);
+            difficultyScreen.classList.add('hidden');
+            gameContent.classList.remove('hidden');
+            score = 0;
+            totalQuestions = 0;
+            generateQuestion(numNotes);
+        });
+    });
+
+    noteButtons.forEach(btn => btn.addEventListener('click', () => handleNoteSelection(btn.dataset.note)));
+
+    playAgainButton.addEventListener('click', () => {
+        finalScoreScreen.classList.add('hidden');
+        difficultyScreen.classList.remove('hidden');
+        nextButton.textContent = "Següent Repte";
+        nextButton.onclick = () => generateQuestion(currentDifficulty);
+    });
+});
+</script>
+<!-- FIN SCRIPT APP INTEGRADA -->
 </body>
 </html>
