@@ -5,13 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lectura Musical | EMMCA</title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/lectura.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
-  <!-- Si la app de JJ Caro tiene CSS propio, enlázalo aquí -->
-  <!-- <link rel="stylesheet" href="lectura-musical-app/style.css"> -->
 </head>
 <body>
   <!-- Header -->
@@ -40,16 +39,43 @@
       </p>
     </section>
 
-    <section data-aos="fade-up">
-      <!-- Inici de la integració de la app de JJ Caro -->
-      <div id="lectura-app">
-        <!-- Si has copiat el HTML principal de la app, pégalo aquí.
-             Ejemplo de integración básica: -->
-        <iframe src="lectura-musical-app/index.html" width="100%" height="600" style="border:none; border-radius:12px; box-shadow:0 2px 12px rgba(21,101,192,0.10);"></iframe>
-        <!-- O bien, pega aquí el contenido HTML principal de la app -->
+    <!-- INICIO APP INTEGRADA -->
+    <div class="container">
+      <div id="difficulty-screen">
+        <h1>Lectura de notes</h1>
+        <p>Quantes notes vols que apareguin en cada exercici?</p>
+        <div id="difficulty-buttons">
+          <button class="difficulty-button" data-level="2">2 notes</button>
+          <button class="difficulty-button" data-level="4">4 notes</button>
+          <button class="difficulty-button" data-level="6">6 notes</button>
+        </div>
       </div>
-      <!-- Fi de la integració -->
-    </section>
+      <div id="game-content" class="hidden">
+        <div class="header-stats">
+          <div>Punts: <span id="score">0</span> / <span id="totalQuestions">0</span></div>
+        </div>
+        <canvas id="staffCanvas" width="500" height="350"></canvas>
+        <div id="controls">
+          <button class="note-button" data-note="C">C</button>
+          <button class="note-button" data-note="D">D</button>
+          <button class="note-button" data-note="E">E</button>
+          <button class="note-button" data-note="F">F</button>
+          <button class="note-button" data-note="G">G</button>
+          <button class="note-button" data-note="A">A</button>
+          <button class="note-button" data-note="B">B</button>
+        </div>
+        <div id="feedback-area"></div>
+        <button id="next-button" class="hidden">Següent Repte</button>
+      </div>
+      <div id="final-score" class="hidden">
+        <h2>Exercici completat!</h2>
+        <p>La teva puntuació final és:</p>
+        <p><span id="finalScoreDisplay"></span></p>
+        <p>Temps total: <span id="finalTimeDisplay"></span></p>
+        <button class="play-again-button">Torna a jugar</button>
+      </div>
+    </div>
+    <!-- FIN APP INTEGRADA -->
   </main>
 
   <footer>
@@ -61,6 +87,11 @@
   <script>
     AOS.init();
   </script>
-  <!-- Si la app de JJ Caro té JS propi, inclou-lo aquí -->
-  <!-- <script src="lectura-musical-app/app.js"></script> -->
+  <!-- INICIO SCRIPT APP INTEGRADA -->
+  <script>
+    // ...Pega aquí el script JS de la app (el que tienes en lectura-musical-app/index.html)...
+    // (Ya lo tienes en el mensaje anterior, puedes copiarlo tal cual)
+  </script>
+  <!-- FIN SCRIPT APP INTEGRADA -->
 </body>
+</html>
