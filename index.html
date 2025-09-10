@@ -1,31 +1,65 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Web Musical</title>
-  <link rel="stylesheet" href="css/style.css?v=3">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Musical EMMCA</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1 class="brand">Web Musical</h1>
-    <button id="menu-toggle" class="menu-toggle" aria-controls="menu" aria-expanded="false" aria-label="Obrir el menú">☰</button>
+  <!-- Header -->
+  <header>
+    <h1><a href="index.html">Web Musical</a></h1>
+    <button id="menu-toggle" aria-label="Obrir menú">☰</button>
   </header>
 
-  <nav id="menu" class="menu" aria-hidden="true">
+  <!-- Sidebar / Nav -->
+  <nav id="menu" class="menu">
     <ul>
-      <li><a href="piano.html">Piano</a></li>
-      <li><a href="harmonia.html">Harmonia</a></li>
-      <li><a href="lectura.html">Lectura</a></li>
-      <li><a href="dictats.html">Dictats</a></li>
+      <li><a href="#">Inici</a></li>
+      <li><a href="#">Piano</a></li>
+      <li><a href="#">Harmonia</a></li>
+      <li><a href="#">Lectura</a></li>
+      <li><a href="#">Dictats</a></li>
     </ul>
   </nav>
 
-  <main class="content">
-    <h2>Benvinguts a la Web Musical</h2>
-    <p>Explora els apartats per començar a aprendre música.</p>
+  <!-- Contingut Principal -->
+  <main>
+    <section class="hero">
+      <h2>Benvinguts a la Web Musical 🎵</h2>
+      <p>
+        Aquesta web recollirà eines creades per a diferents professors de l’EMMCA 
+        amb l’objectiu de facilitar la pràctica i l’estudi musical.
+      </p>
+      <div class="hero-image">
+        <img src="https://via.placeholder.com/1000x300" alt="Imatge hero de música">
+      </div>
+    </section>
+
+    <section class="content-grid">
+      <div class="card">
+        <img src="https://via.placeholder.com/400x250" alt="Recurs de piano">
+        <h3>Recursos de Piano</h3>
+        <p>Exercicis i activitats per millorar la tècnica i la lectura pianística.</p>
+      </div>
+      <div class="card">
+        <img src="https://via.placeholder.com/400x250" alt="Recurs d’harmonia">
+        <h3>Harmonia</h3>
+        <p>Teoria i pràctica per entendre l’estructura de la música.</p>
+      </div>
+      <div class="card">
+        <img src="https://via.placeholder.com/400x250" alt="Recurs de lectura">
+        <h3>Lectura Musical</h3>
+        <p>Activitats per agilitzar la lectura de partitures i ritmes.</p>
+      </div>
+    </section>
   </main>
 
-  <script src="js/main.js?v=3"></script>
+  <footer>
+    <p>&copy; 2025 Eugeni Corchero - Recursos musicals per a estudiants i professors.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
