@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html lang="ca">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Web Musical</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=2">
 </head>
 <body>
-  <header>
-    <h1>Web Musical</h1>
-    <button id="menu-toggle" aria-label="Obrir menú">☰</button>
+  <header class="site-header">
+    <h1 class="brand">Web Musical</h1>
+    <button id="menu-toggle" class="menu-toggle" aria-controls="menu" aria-expanded="false" aria-label="Obrir el menú">☰</button>
   </header>
 
-  <nav id="menu" class="hidden">
+  <nav id="menu" class="menu" aria-hidden="true">
     <ul>
       <li><a href="piano.html">Piano</a></li>
       <li><a href="harmonia.html">Harmonia</a></li>
@@ -21,11 +21,11 @@
     </ul>
   </nav>
 
-  <main>
+  <main class="content">
     <h2>Benvinguts a la Web Musical</h2>
     <p>Explora els apartats per començar a aprendre música.</p>
   </main>
 
-  <script src="js/main.js"></script>
+  <script src="js/main.js?v=2"></script>
 </body>
 </html>

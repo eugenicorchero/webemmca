@@ -1,68 +1,72 @@
-/* Reset senzill */
-body, h1, h2, ul, li, p {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* reset mínim */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; color:#21303a; background:#f4f6f7; }
 
-body {
-  font-family: sans-serif;
-}
-
-/* Header */
-header {
+/* HEADER */
+.site-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #333;
-  color: white;
-  padding: 1rem;
+  background:#2c3e50;
+  color:#ecf0f1;
+  padding: 0.9rem 1rem;
+  position: relative;
+  z-index: 30;
 }
 
-#menu-toggle {
-  font-size: 1.5rem;
-  background: none;
-  border: none;
-  color: white;
+.brand { font-size: 1.4rem; }
+
+/* BOTÓ */
+.menu-toggle {
+  font-size: 1.4rem;
+  background: transparent;
+  color: inherit;
+  border: 1px solid transparent;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-/* Menú */
-nav {
-  background: #444;
+/* MENU - per mòbil: amagat per defecte (max-height per animar) */
+.menu {
+  background: #34495e;
+  overflow: hidden;
+  max-height: 0;                 /* amagat */
+  transition: max-height 300ms ease;
 }
 
-nav ul {
-  list-style: none;
-}
+.menu ul { list-style: none; }
 
-nav li {
-  border-top: 1px solid #555;
-}
+.menu li + li { border-top: 1px solid rgba(255,255,255,0.06); }
 
-nav a {
+.menu a {
   display: block;
-  padding: 1rem;
-  color: white;
+  padding: 0.95rem 1rem;
+  color: #ecf0f1;
   text-decoration: none;
+  font-size: 1rem;
 }
 
-nav a:hover {
-  background: #666;
+/* quan s'obre: fem un max-height gran (suficient per tots els items) */
+.menu.open {
+  max-height: 480px; /* suficient per 4-6 elements; s'adapta amb overflow si cal */
 }
 
-/* Ocult per defecte */
-.hidden {
-  display: none;
-}
+/* CONTENT */
+.content { padding: 1.25rem; }
 
-/* Mostra en pantalles grans (opcional) */
+/* RESPONSIVE GRAN (tablet/desktop) */
+/* A partir de 768px voldrem que el menú sigui sempre visible a la banda superior (com a barra horitzontal) */
 @media (min-width: 768px) {
-  nav {
-    display: block !important;
+  .site-header { padding: 1rem 2rem; }
+  .menu {
+    display: block;
+    max-height: none;   /* sempre visible */
   }
-  #menu-toggle {
-    display: none;
-  }
+  .menu ul { display: flex; gap: 0.5rem; }
+  .menu li { border-top: none; }
+  .menu a { padding: 0.9rem 1rem; }
+  /* ocultem el toggle perquè en pantalles grans el menú és visible */
+  .menu-toggle { display: none; }
 }
-
