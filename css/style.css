@@ -16,10 +16,10 @@
 }
 
 body {
-  font-family: "Segoe UI", sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
+  font-family: 'Roboto', Arial, sans-serif;
+  background: linear-gradient(135deg, #e3f0ff 0%, #b3cfff 100%);
+  margin: 0;
+  color: #222;
 }
 
 /* Header */
@@ -27,17 +27,22 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #222;
+  background: #1565c0;
   color: #fff;
   padding: 1rem 2rem;
-  position: relative;
-  z-index: 2;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.08);
 }
 
 header h1 a {
   color: #fff;
   text-decoration: none;
   font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
 
 #menu-toggle {
@@ -55,11 +60,12 @@ header h1 a {
   left: -250px;
   width: 220px;
   height: 100%;
-  background: #333;
+  background: #1976d2;
   color: #fff;
   transition: left 0.3s;
-  z-index: 1;
+  z-index: 9;
   padding-top: 70px; /* space for header */
+  box-shadow: 2px 0 12px rgba(21,101,192,0.12);
 }
 
 .menu.open {
@@ -82,17 +88,41 @@ header h1 a {
   font-size: 1.2rem;
   padding: 0.5rem 2rem;
   display: block;
+  transition: background 0.2s;
+}
+
+.menu a:hover {
+  background: #1565c0;
+  border-radius: 0 20px 20px 0;
+}
+
+body.menu-open main,
+body.menu-open footer {
+  margin-left: 220px;
+  transition: margin-left 0.3s;
+}
+
+main {
+  margin-top: 80px;
+  padding: 2rem;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Hero section */
 .hero {
-  margin-top: 90px;
+  background: #e3f2fd;
+  border-radius: 16px;
   padding: 2rem;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.07);
+  margin-bottom: 2rem;
   text-align: center;
 }
 
 .hero h2 {
-  font-size: 2rem;
+  color: #1565c0;
+  font-size: 2.2rem;
   margin-bottom: 1rem;
 }
 
@@ -103,41 +133,41 @@ header h1 a {
 
 .hero-image img {
   max-width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(21,101,192,0.10);
 }
 
 /* Content grid */
 .content-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
-  padding: 2rem;
 }
 
 .card {
-  background: var(--white);
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  overflow: hidden;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(21,101,192,0.10);
+  padding: 1.5rem;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 6px 24px rgba(21,101,192,0.18);
 }
 
 .card img {
-  width: 100%;
-  display: block;
+  max-width: 100%;
+  border-radius: 10px;
+  margin-bottom: 1rem;
 }
 
 .card h3 {
-  padding: 1rem;
-  background: var(--secondary);
-  color: var(--white);
-  margin: 0;
+  color: #1976d2;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
 }
 
 .card p {
@@ -146,29 +176,43 @@ header h1 a {
 
 /* Footer */
 footer {
+  background: #1565c0;
+  color: #fff;
   text-align: center;
-  padding: 1rem;
-  background: var(--primary);
-  color: var(--white);
+  padding: 1rem 0;
   margin-top: 2rem;
+  box-shadow: 0 -2px 8px rgba(21,101,192,0.08);
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+  border-radius: 0 0 12px 12px;
 }
 
-/* Responsive Desktop */
-@media (min-width: 1024px) {
-  #menu-toggle {
-    display: none;
+/* Responsive */
+@media (max-width: 900px) {
+  .content-grid {
+    grid-template-columns: 1fr 1fr;
   }
+}
 
+@media (max-width: 600px) {
+  header, main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .content-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  body.menu-open main,
+  body.menu-open footer {
+    margin-left: 0;
+  }
   .menu {
-    transform: translateX(0);
-    width: 220px;
+    width: 100vw;
+    left: -100vw;
+    padding-top: 60px;
   }
-
-  main {
-    margin-left: 220px;
-  }
-
-  header {
-    left: 220px;
+  .menu.open {
+    left: 0;
   }
 }
