@@ -1,67 +1,67 @@
-/* Reset bàsic */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
+/* Reset senzill */
+body, h1, h2, ul, li, p {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    background-color: #f4f6f7;
-    color: #2c3e50;
+  font-family: sans-serif;
 }
 
 /* Header */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 15px 20px;
-    position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #333;
+  color: white;
+  padding: 1rem;
 }
 
-header h1 {
-    font-size: 1.5rem;
+#menu-toggle {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 
-/* Botó toggle */
-.menu-toggle {
-    font-size: 1.8rem;
-    cursor: pointer;
-    user-select: none;
+/* Menú */
+nav {
+  background: #444;
 }
 
-/* Menú desplegable */
-.dropdown-menu {
+nav ul {
+  list-style: none;
+}
+
+nav li {
+  border-top: 1px solid #555;
+}
+
+nav a {
+  display: block;
+  padding: 1rem;
+  color: white;
+  text-decoration: none;
+}
+
+nav a:hover {
+  background: #666;
+}
+
+/* Ocult per defecte */
+.hidden {
+  display: none;
+}
+
+/* Mostra en pantalles grans (opcional) */
+@media (min-width: 768px) {
+  nav {
+    display: block !important;
+  }
+  #menu-toggle {
     display: none;
-    position: absolute;
-    top: 60px; /* just sota del header */
-    right: 20px;
-    background-color: #34495e;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
-    z-index: 1000;
+  }
 }
-
-.dropdown-menu ul {
-    list-style: none;
-}
-
-.dropdown-menu li {
-    padding: 12px 20px;
-    cursor: pointer;
-    color: #ecf0f1;
-    transition: background-color 0.3s;
-}
-
-.dropdown-menu li:hover {
-    background-color: #1abc9c;
-}
-
-/* Contingut principal */
-.content {
-    padding: 30px;
-}
-
