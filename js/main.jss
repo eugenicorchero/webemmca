@@ -1,20 +1,25 @@
-// Seleccionem tots els elements del menú
-const menuItems = document.querySelectorAll('.menu-item');
-const content = document.querySelector('.content');
+const menuToggle = document.getElementById("menu-toggle");
+const dropdownMenu = document.getElementById("dropdown-menu");
+const menuItems = document.querySelectorAll(".menu-item");
+const content = document.querySelector(".content");
 
+// Obrir/tancar menú desplegable
+menuToggle.addEventListener("click", () => {
+    dropdownMenu.style.display = 
+        dropdownMenu.style.display === "block" ? "none" : "block";
+});
+
+// Quan es clica un element del menú
 menuItems.forEach(item => {
-    item.addEventListener('click', () => {
-        // Eliminem l'estat actiu de l'antic element seleccionat
-        document.querySelector('.menu-item.active')?.classList.remove('active');
-        item.classList.add('active');
-
-        // Agafem la secció seleccionada
+    item.addEventListener("click", () => {
         const section = item.dataset.section;
 
-        // Actualitzem el contingut principal amb HTML bàsic
         content.innerHTML = `
-            <h1>${section.charAt(0).toUpperCase() + section.slice(1)}</h1>
+            <h2>${section.charAt(0).toUpperCase() + section.slice(1)}</h2>
             <p>Contingut de la secció ${section} aquí.</p>
         `;
+
+        // Amaguem el menú després de seleccionar
+        dropdownMenu.style.display = "none";
     });
 });

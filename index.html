@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Musical</title>
-    <!-- Link relatiu a la carpeta css -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <nav class="sidebar">
-            <h2>Web Musical</h2>
+    <header>
+        <h1>Web Musical</h1>
+        <div class="menu-toggle" id="menu-toggle">☰</div>
+        <nav class="dropdown-menu" id="dropdown-menu">
             <ul>
                 <li class="menu-item" data-section="piano">Piano</li>
                 <li class="menu-item" data-section="harmonia">Harmonia</li>
@@ -18,12 +18,13 @@
                 <li class="menu-item" data-section="dictats">Dictats</li>
             </ul>
         </nav>
-        <main class="content">
-            <h1>Benvinguts a Web Musical</h1>
-            <p>Selecciona un apartat del menú per començar a explorar els continguts.</p>
-        </main>
-    </div>
-    <!-- Link relatiu a la carpeta js -->
+    </header>
+
+    <main class="content">
+        <h2>Benvinguts a Web Musical</h2>
+        <p>Selecciona un apartat del menú per començar a explorar els continguts.</p>
+    </main>
+
     <script src="js/main.js"></script>
 </body>
 </html>
