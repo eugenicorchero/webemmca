@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lectura Musical | EMMCA</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+  <!-- Si la app de JJ Caro tiene CSS propio, enlázalo aquí -->
+  <!-- <link rel="stylesheet" href="lectura-musical-app/style.css"> -->
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1><a href="index.html">Web Musical</a></h1>
+    <button id="menu-toggle" aria-label="Obrir menú"><i class="fas fa-bars"></i></button>
+  </header>
+
+  <!-- Sidebar / Nav -->
+  <nav id="menu" class="menu">
+    <ul>
+      <li><a href="index.html">Inici</a></li>
+      <li><a href="#">Piano</a></li>
+      <li><a href="#">Harmonia</a></li>
+      <li><a href="lectura.html" class="active">Lectura Musical</a></li>
+      <li><a href="#">Dictats</a></li>
+    </ul>
+  </nav>
+
+  <!-- Contingut Principal -->
+  <main>
+    <section class="hero" data-aos="fade-down">
+      <h2>Lectura Musical</h2>
+      <p>
+        Practica la lectura de pentagrama amb aquesta webapp interactiva.
+      </p>
+    </section>
+
+    <section data-aos="fade-up">
+      <!-- Inici de la integració de la app de JJ Caro -->
+      <div id="lectura-app">
+        <!-- Si has copiat el HTML principal de la app, pégalo aquí.
+             Ejemplo de integración básica: -->
+        <iframe src="lectura-musical-app/index.html" width="100%" height="600" style="border:none; border-radius:12px; box-shadow:0 2px 12px rgba(21,101,192,0.10);"></iframe>
+        <!-- O bien, pega aquí el contenido HTML principal de la app -->
+      </div>
+      <!-- Fi de la integració -->
+    </section>
+  </main>
+
+  <footer>
+    <p>Aquesta app de Lectura Musical ha estat creada per <strong>JJ Caro</strong> i integrada a EMMCA per Eugeni Corchero.</p>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <!-- Si la app de JJ Caro té JS propi, inclou-lo aquí -->
+  <!-- <script src="lectura-musical-app/app.js"></script> -->
+</body>
