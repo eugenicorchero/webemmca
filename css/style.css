@@ -25,64 +25,63 @@ body {
 /* Header */
 header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  background: var(--primary);
-  color: var(--white);
-  padding: 1rem;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
+  justify-content: space-between;
+  background: #222;
+  color: #fff;
+  padding: 1rem 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 header h1 a {
-  color: var(--white);
+  color: #fff;
   text-decoration: none;
+  font-size: 2rem;
 }
 
 #menu-toggle {
   background: none;
   border: none;
-  color: var(--white);
+  color: #fff;
   font-size: 2rem;
   cursor: pointer;
-  display: block;
 }
 
-/* Sidebar menú */
+/* Sidebar Menu */
 .menu {
   position: fixed;
-  top: 70px;
-  left: 0;
-  height: 100%;
+  top: 0;
+  left: -250px;
   width: 220px;
-  background: var(--secondary);
-  padding-top: 1rem;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 999;
+  height: 100%;
+  background: #333;
+  color: #fff;
+  transition: left 0.3s;
+  z-index: 1;
+  padding-top: 70px; /* space for header */
 }
 
 .menu.open {
-  transform: translateX(0);
+  left: 0;
 }
 
 .menu ul {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.menu li a {
-  display: block;
-  padding: 1rem;
-  color: var(--white);
+.menu li {
+  margin: 1.5rem 0;
+}
+
+.menu a {
+  color: #fff;
   text-decoration: none;
-  transition: background 0.3s;
-}
-
-.menu li a:hover {
-  background: var(--highlight);
+  font-size: 1.2rem;
+  padding: 0.5rem 2rem;
+  display: block;
 }
 
 /* Hero section */
