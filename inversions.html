@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrenador d'Inversions d'Acords</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+    :root {
+      --bg-dark: #1C2135;
+      --card-bg: #2C344F;
+      --primary-text: #FFFFFF;
+      --secondary-text: #A9B1D6;
+      --accent-pink: #E04463;
+      --accent-green: #89d489;
+      --input-border: #414868;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      background-color: var(--bg-dark);
+      color: var(--secondary-text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      padding: 30px;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 450px; /* Una mica més ample per a la pregunta */
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    h1 {
+      font-size: 1.3em;
+      color: var(--primary-text);
+      font-weight: 700;
+      margin: 0 0 25px 0;
+    }
+
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      font-size: 0.9em;
+    }
+
+    #punts, #temps {
+      margin: 0;
+    }
+    
+    #acordPregunta {
+      font-size: 1.5em; /* Ajustem la mida per a la pregunta més llarga */
+      font-weight: 700;
+      color: var(--primary-text);
+      margin: 0 0 25px 0;
+      line-height: 1.4;
+    }
+    
+    #acordPregunta strong {
+        color: var(--accent-pink);
+        text-transform: uppercase;
+    }
+
+    #resultat, #resum {
+      font-weight: bold;
+      font-size: 1.1em;
+      min-height: 50px;
+      line-height: 1.4;
+      color: var(--accent-pink);
+      margin-bottom: 25px;
+    }
+    
+    .resposta-correcta-error {
+        color: var(--accent-green);
+        font-size: 1.2em;
+        display: inline-block;
+        margin-top: 6px;
+    }
+
+    #resum {
+        min-height: auto;
+        color: var(--primary-text);
+    }
+
+    input {
+      padding: 18px;
+      width: 100%;
+      font-size: 1.1em;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      background-color: var(--bg-dark);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      color: var(--primary-text);
+      text-align: center;
+    }
+    
+    input::placeholder {
+        color: var(--secondary-text);
+        opacity: 0.7;
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      margin: 10px auto;
+      padding: 18px 0;
+      font-size: 1.1em;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      background-color: var(--accent-pink);
+      color: var(--primary-text);
+      border-radius: 10px;
+      transition: filter 0.2s;
+    }
+    
+    button:hover:not(:disabled) {
+        filter: brightness(1.1);
+    }
+
+    button:disabled {
+      background-color: #5b6079;
+      color: #9a9fb5;
+      cursor: not-allowed;
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎹 Indica les inversions d'acords</h1>
+
+    <div class="top-info">
+        <p id="punts">Punts: 0</p>
+        <p id="temps">Temps: -</p>
+    </div>
+
+    <p id="acordPregunta">Carregant...</p>
+    <p id="resultat"></p>
+
+    <input type="text" id="resposta" placeholder="Ex: E G C" autocomplete="off" />
+    <button id="btnSeguent">Següent Acord</button>
+
+    <p id="resum"></p>
+    <footer>
+    <p>Aquesta app de Lectura Musical ha estat creada per <strong>JJ Caro</strong> i integrada per <strong>Eugeni Corchero</strong>.</p>
+  </footer>
+  </div>
+
+  <audio id="soCorrecte" src="assets/sounds/correcte.mp3" preload="auto"></audio>
+  <audio id="soError" src="assets/sounds/error.mp3" preload="auto"></audio>
+  <audio id="soBenvinguda" src="assets/sounds/benvinguda.mp3" preload="auto"></audio>
+
+  <script>
+    const acordsPerNivell = {
+      facil: { "C": ["C", "E", "G"], "D": ["D", "F#", "A"], "E": ["E", "G#", "B"], "F": ["F", "A", "C"], "G": ["G", "B", "D"], "A": ["A", "C#", "E"], "B": ["B", "D#", "F#"], "Cm": ["C", "Eb", "G"], "Dm": ["D", "F", "A"], "Em": ["E", "G", "B"], "Fm": ["F", "Ab", "C"], "Gm": ["G", "Bb", "D"], "Am": ["A", "C", "E"], "Bm": ["B", "D", "F#"] },
+      mitja: { "F#": ["F#", "A#", "C#"], "Bb": ["Bb", "D", "F"], "Eb": ["Eb", "G", "Bb"], "Ab": ["Ab", "C", "Eb"], "Db": ["Db", "F", "Ab"], "Bbm": ["Bb", "Db", "F"], "Ebm": ["Eb", "Gb", "Bb"], "F#m": ["F#", "A", "C#"], "Abm": ["Ab", "Cb", "Eb"] },
+      dificil: { "G#m": ["G#", "B", "D#"], "G#": ["G#", "B#", "D#"], "C#m": ["C#", "E", "G#"], "A#m": ["A#", "C#", "E#"], "Dbm": ["Db", "Fb", "Ab"], "Cb": ["Cb", "Eb", "Gb"], "A#": ["A#", "C##", "E#"], "C#": ["C#", "E#", "G#"], "D#m": ["D#", "F#", "A#"], "Gb": ["Gb", "Bb", "Db"] }
+    };
+
+    let nivellActualJoc = 'facil', puntsNivellFacil = 0, puntsNivellMitja = 0;
+    let acordsActuals = {}, acordActual = "", notesActuals = [], inversioActual = 0;
+    let punts = 0, totalRespostes = 0;
+    const tempsMaxim = 15;
+    let temps = tempsMaxim, intervalId = null;
+    let respostaJaComprovada = false, acordsMostratsGlobal = [];
+
+    const btnSeguent = document.getElementById("btnSeguent");
+    const inputResposta = document.getElementById("resposta");
+    const acordPreguntaEl = document.getElementById("acordPregunta");
+    const resultatEl = document.getElementById("resultat");
+    const puntsEl = document.getElementById("punts");
+    const tempsEl = document.getElementById("temps");
+    const resumEl = document.getElementById("resum");
+
+    const soCorrecte = document.getElementById("soCorrecte");
+    const soError = document.getElementById("soError");
+    const soBenvinguda = document.getElementById("soBenvinguda");
+
+    // Nova funció clau per a aquest joc
+    function obtenirInversio(notes, numInversio) {
+      if (notes.length !== 3) return notes;
+      let inversio = notes.slice();
+      for (let i = 0; i < numInversio; i++) {
+        inversio.push(inversio.shift());
+      }
+      return inversio;
+    }
+
+    function obtenirAcordsNivellActual() {
+      if (nivellActualJoc === 'facil') return acordsPerNivell.facil;
+      if (nivellActualJoc === 'mitja') return acordsPerNivell.mitja;
+      return acordsPerNivell.dificil;
+    }
+
+    function nouAcord() {
+      if (totalRespostes >= 10) {
+        bloquejarSiAcabat();
+        return;
+      }
+
+      acordsActuals = obtenirAcordsNivellActual();
+      const candidats = Object.keys(acordsActuals).filter(n => !acordsMostratsGlobal.includes(n));
+      if (candidats.length === 0) {
+        acordsMostratsGlobal = acordsMostratsGlobal.filter(nom => !Object.keys(acordsActuals).includes(nom));
+        nouAcord();
+        return;
+      }
+      acordActual = candidats[Math.floor(Math.random() * candidats.length)];
+      const notesArrel = acordsActuals[acordActual];
+      
+      // Lògica per generar la pregunta d'inversió
+      inversioActual = Math.floor(Math.random() * 3); // 0: fonamental, 1: primera, 2: segona
+      notesActuals = obtenirInversio(notesArrel, inversioActual);
+      acordsMostratsGlobal.push(acordActual);
+
+      const tipus = ["l'ESTAT FONAMENTAL", "la PRIMERA INVERSIÓ", "la SEGONA INVERSIÓ"][inversioActual];
+      acordPreguntaEl.innerHTML = `Escriu  <strong>${tipus}</strong><br>de l'acord de ${acordActual}`;
+
+      resultatEl.innerHTML = "";
+      inputResposta.value = "";
+      tempsEl.textContent = `Temps: ${tempsMaxim}s`;
+      temps = tempsMaxim;
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(actualitzarTemps, 1000);
+      respostaJaComprovada = false;
+      btnSeguent.disabled = true;
+      inputResposta.disabled = false;
+      inputResposta.focus();
+    }
+
+    function actualitzarTemps() {
+      temps--;
+      tempsEl.textContent = `Temps: ${temps}s`;
+      if (temps <= 0 && !respostaJaComprovada) {
+        clearInterval(intervalId);
+        soError.play();
+        const missatgeHtml = `Temps esgotat!<br><span class="resposta-correcta-error">${notesActuals.join(" ")}</span>`;
+        mostrarResultat(false, missatgeHtml);
+        totalRespostes++;
+        respostaJaComprovada = true;
+        btnSeguent.disabled = false;
+        bloquejarSiAcabat();
+      }
+    }
+    
+    // Funció de neteja SENSE ordenar les notes, ja que l'ordre importa
+    function netejarNotes(arr) {
+      return arr.map(n => n.trim().toUpperCase());
+    }
+
+    function comprovar() {
+      if (respostaJaComprovada || temps <= 0) return;
+      const resposta = inputResposta.value.trim().split(/\s+/);
+      if (resposta.length !== 3 && resposta[0] !== '') {
+        mostrarResultat(false, "Introdueix 3 notes separades per espais.");
+        return;
+      } else if (resposta[0] === '') {
+        return;
+      }
+      
+      clearInterval(intervalId);
+      totalRespostes++;
+      respostaJaComprovada = true;
+
+      const respostaNeta = netejarNotes(resposta);
+      const correcteNeta = netejarNotes(notesActuals);
+      
+      // La comprovació compara l'ordre exacte de les notes
+      if (respostaNeta.join(" ") === correcteNeta.join(" ")) {
+        punts++;
+        soCorrecte.play();
+        let missatge = "Correcte!";
+        
+        if (nivellActualJoc === 'facil') {
+          puntsNivellFacil++;
+          if (puntsNivellFacil === 4) {
+            nivellActualJoc = 'mitja';
+            missatge = "Correcte! 🎉 Has pujat al nivell Mitjà!";
+          }
+        } else if (nivellActualJoc === 'mitja') {
+          puntsNivellMitja++;
+          if (puntsNivellMitja === 4) {
+            nivellActualJoc = 'dificil';
+            missatge = "Correcte! 🔥 Has pujat al nivell Difícil!";
+          }
+        }
+        
+        mostrarResultat(true, missatge);
+      } else {
+        soError.play();
+        const missatgeHtml = `Incorrecte.<br><span class="resposta-correcta-error">${notesActuals.join(" ")}</span>`;
+        mostrarResultat(false, missatgeHtml);
+      }
+      
+      puntsEl.textContent = `Punts: ${punts}`;
+      btnSeguent.disabled = false;
+      bloquejarSiAcabat();
+    }
+
+    function mostrarResultat(correcte, missatge) {
+      resultatEl.innerHTML = missatge;
+      resultatEl.style.color = correcte ? "var(--accent-green)" : "var(--accent-pink)";
+    }
+
+    function bloquejarSiAcabat() {
+      if (totalRespostes >= 10) {
+        resumEl.textContent = `Test acabat! Has fet ${punts} punts de 10. Enhorabona!`;
+        btnSeguent.disabled = true;
+        inputResposta.disabled = true;
+        if(intervalId) clearInterval(intervalId);
+        tempsEl.textContent = "Temps: 0s";
+      }
+    }
+
+    btnSeguent.addEventListener("click", () => {
+       if (totalRespostes < 10) nouAcord();
+    });
+
+    inputResposta.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if(!respostaJaComprovada) {
+            comprovar();
+        } else {
+            btnSeguent.click();
+        }
+      }
+    });
+
+    window.onload = () => {
+      soBenvinguda.play().catch(() => {});
+      nouAcord();
+    };
+  </script>
+</body>
+</html>
