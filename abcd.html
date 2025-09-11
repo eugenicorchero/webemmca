@@ -1,17 +1,304 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lectura</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/lectura.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrenador d'Inversions d'Acords</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+  <style>
+    /* Estils unificats basats en l'estètica de lectura.html */
+    :root {
+      --primary: #1e3a5f;
+      --secondary: #2d4b73;
+      --highlight: #3e6ba0;
+      --bg: #f5f7fa;
+      --text: #333;
+      --white: #fff;
+      --correct-color: #4CAF50;
+      --incorrect-color: #F44336;
+      --accent-blue: #1976d2;
+      --light-blue: #e3f2fd;
+    }
+
+   * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: linear-gradient(135deg, #e3f0ff 0%, #b3cfff 100%);
+      margin: 0;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Header (mantenint consistència amb el lloc) */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1565c0;
+      color: #fff;
+      padding: 1rem 2rem;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
+    }
+
+    header h1 a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    #menu-toggle {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+
+    /* Sidebar Menu */
+    .menu {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 220px;
+      height: 100%;
+      background: #1976d2;
+      color: #fff;
+      transition: left 0.3s;
+      z-index: 9;
+      padding-top: 70px;
+      box-shadow: 2px 0 12px rgba(21, 101, 192, 0.12);
+    }
+
+    .menu.open {
+      left: 0;
+    }
+
+    .menu ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .menu li {
+      margin: 1.5rem 0;
+    }
+
+    .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.2rem;
+      padding: 0.5rem 2rem;
+      display: block;
+      transition: background 0.2s;
+    }
+
+    .menu a:hover {
+      background: #1565c0;
+      border-radius: 0 20px 20px 0;
+    }
+
+    /* Container principal */
+    .container {
+      background: var(--light-blue);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 2px 8px rgba(21, 101, 192, 0.07);
+      margin-bottom: 2rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+      max-width: 450px;
+      margin-top: 100px;
+      /* Espai per al header fix */
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: var(--accent-blue);
+      font-weight: 700;
+      margin: 0 0 25px 0;
+      text-align: center;
+    }
+
+    .top-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+      color: var(--accent-blue);
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #b3cfff;
+      margin-bottom: 30px;
+      font-size: 0.9em;
+    }
+
+    #punts,
+    #temps {
+      margin: 0;
+    }
+
+    #acordPregunta {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      margin: 0 0 25px 0;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    #acordPregunta strong {
+      color: var(--incorrect-color);
+      text-transform: uppercase;
+    }
+
+    #resultat,
+    #resum {
+      font-weight: bold;
+      font-size: 1.1rem;
+      min-height: 50px;
+      line-height: 1.4;
+      color: var(--incorrect-color);
+      margin-bottom: 25px;
+      text-align: center;
+    }
+
+    .resposta-correcta-error {
+      color: var(--correct-color);
+      font-size: 1.2em;
+      display: inline-block;
+      margin-top: 6px;
+    }
+
+    #resum {
+      min-height: auto;
+      color: var(--accent-blue);
+    }
+
+    /* Inputs i botons amb estil unificat */
+    input {
+      padding: 0.85rem 1.5rem;
+      width: 100%;
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+      border: 2px solid var(--accent-blue);
+      border-radius: 9999px;
+      color: var(--text);
+      text-align: center;
+      font-weight: 600;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--highlight);
+      box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+    }
+
+    input::placeholder {
+      color: #999;
+      opacity: 0.7;
+    }
+
+    button {
+      background-color: var(--accent-blue);
+      color: #fff !important;
+      border: none;
+      padding: 0.85rem 1.5rem;
+      font-size: 1.1rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 0.25rem;
+      transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 2px 8px rgba(21, 101, 192, 0.10);
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    button:hover:not(:disabled) {
+      background-color: #1565c0;
+      transform: translateY(-2px);
+    }
+
+    button:disabled {
+      background-color: #5b6079;
+      color: #9a9fb5 !important;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Footer consistent */
+    footer {
+      background: #1565c0;
+      color: #fff;
+      text-align: center;
+      padding: 1rem 0;
+      margin-top: 2rem;
+      box-shadow: 0 -2px 8px rgba(21, 101, 192, 0.08);
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      border-radius: 12px 12px 0 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container {
+        width: 98vw;
+        padding: 1rem;
+        margin-top: 80px;
+      }
+
+      body.menu-open .container {
+        margin-left: 0;
+      }
+
+      .menu {
+        width: 100vw;
+        left: -100vw;
+        padding-top: 60px;
+      }
+
+      .menu.open {
+        left: 0;
+      }
+
+      header {
+        padding: 1rem;
+      }
+
+      header h1 a {
+        font-size: 1.5rem;
+      }
+    }
+
+    audio {
+      display: none;
+    }
+  </style>
 </head>
+
 <body>
   <!-- Header -->
   <header>
@@ -25,18 +312,18 @@
       <li><a href="index.html">Inici</a></li>
       <li><a href="#">Piano</a></li>
       <li><a href="#">Harmonia</a></li>
-      <li><a href="lectura.html" class="active">Lectura Musical</a></li>
+      <li><a href="lectura.html">Lectura Musical</a></li>
       <li><a href="#">Dictats</a></li>
+      <li><a href="inversions.html" class="active">Inversions</a></li>
     </ul>
   </nav>
-<body>
-
+<main>
   <div class="container">
     <h1>🎹 Indica les inversions d'acords</h1>
 
     <div class="top-info">
-        <p id="punts">Punts: 0</p>
-        <p id="temps">Temps: -</p>
+      <p id="punts">Punts: 0</p>
+      <p id="temps">Temps: -</p>
     </div>
 
     <p id="acordPregunta">Carregant...</p>
@@ -46,16 +333,27 @@
     <button id="btnSeguent">Següent Acord</button>
 
     <p id="resum"></p>
-    <footer>
-    <p>Aquesta app de Lectura Musical ha estat creada per <strong>JJ Caro</strong> i integrada per <strong>Eugeni Corchero</strong>.</p>
-  </footer>
   </div>
+</main>
+  <!-- Footer -->
+  <footer>
+    <p>Aquesta app de Lectura Musical ha estat creada per <strong>JJ Caro</strong> i integrada per <strong>Eugeni
+        Corchero</strong>.</p>
+  </footer>
 
   <audio id="soCorrecte" src="assets/sounds/correcte.mp3" preload="auto"></audio>
   <audio id="soError" src="assets/sounds/error.mp3" preload="auto"></audio>
   <audio id="soBenvinguda" src="assets/sounds/benvinguda.mp3" preload="auto"></audio>
 
   <script>
+    // Script del menú (consistent amb lectura.html)
+    document.getElementById('menu-toggle').addEventListener('click', function () {
+      const menu = document.getElementById('menu');
+      menu.classList.toggle('open');
+      document.body.classList.toggle('menu-open');
+    });
+
+    // Script principal de l'aplicació (sense canvis funcionals)
     const acordsPerNivell = {
       facil: { "C": ["C", "E", "G"], "D": ["D", "F#", "A"], "E": ["E", "G#", "B"], "F": ["F", "A", "C"], "G": ["G", "B", "D"], "A": ["A", "C#", "E"], "B": ["B", "D#", "F#"], "Cm": ["C", "Eb", "G"], "Dm": ["D", "F", "A"], "Em": ["E", "G", "B"], "Fm": ["F", "Ab", "C"], "Gm": ["G", "Bb", "D"], "Am": ["A", "C", "E"], "Bm": ["B", "D", "F#"] },
       mitja: { "F#": ["F#", "A#", "C#"], "Bb": ["Bb", "D", "F"], "Eb": ["Eb", "G", "Bb"], "Ab": ["Ab", "C", "Eb"], "Db": ["Db", "F", "Ab"], "Bbm": ["Bb", "Db", "F"], "Ebm": ["Eb", "Gb", "Bb"], "F#m": ["F#", "A", "C#"], "Abm": ["Ab", "Cb", "Eb"] },
@@ -112,7 +410,7 @@
       }
       acordActual = candidats[Math.floor(Math.random() * candidats.length)];
       const notesArrel = acordsActuals[acordActual];
-      
+
       // Lògica per generar la pregunta d'inversió
       inversioActual = Math.floor(Math.random() * 3); // 0: fonamental, 1: primera, 2: segona
       notesActuals = obtenirInversio(notesArrel, inversioActual);
@@ -147,7 +445,7 @@
         bloquejarSiAcabat();
       }
     }
-    
+
     // Funció de neteja SENSE ordenar les notes, ja que l'ordre importa
     function netejarNotes(arr) {
       return arr.map(n => n.trim().toUpperCase());
@@ -162,20 +460,20 @@
       } else if (resposta[0] === '') {
         return;
       }
-      
+
       clearInterval(intervalId);
       totalRespostes++;
       respostaJaComprovada = true;
 
       const respostaNeta = netejarNotes(resposta);
       const correcteNeta = netejarNotes(notesActuals);
-      
+
       // La comprovació compara l'ordre exacte de les notes
       if (respostaNeta.join(" ") === correcteNeta.join(" ")) {
         punts++;
         soCorrecte.play();
         let missatge = "Correcte!";
-        
+
         if (nivellActualJoc === 'facil') {
           puntsNivellFacil++;
           if (puntsNivellFacil === 4) {
@@ -189,14 +487,14 @@
             missatge = "Correcte! 🔥 Has pujat al nivell Difícil!";
           }
         }
-        
+
         mostrarResultat(true, missatge);
       } else {
         soError.play();
         const missatgeHtml = `Incorrecte.<br><span class="resposta-correcta-error">${notesActuals.join(" ")}</span>`;
         mostrarResultat(false, missatgeHtml);
       }
-      
+
       puntsEl.textContent = `Punts: ${punts}`;
       btnSeguent.disabled = false;
       bloquejarSiAcabat();
@@ -204,7 +502,7 @@
 
     function mostrarResultat(correcte, missatge) {
       resultatEl.innerHTML = missatge;
-      resultatEl.style.color = correcte ? "var(--accent-green)" : "var(--accent-pink)";
+      resultatEl.style.color = correcte ? "var(--correct-color)" : "var(--incorrect-color)";
     }
 
     function bloquejarSiAcabat() {
@@ -212,30 +510,31 @@
         resumEl.textContent = `Test acabat! Has fet ${punts} punts de 10. Enhorabona!`;
         btnSeguent.disabled = true;
         inputResposta.disabled = true;
-        if(intervalId) clearInterval(intervalId);
+        if (intervalId) clearInterval(intervalId);
         tempsEl.textContent = "Temps: 0s";
       }
     }
 
     btnSeguent.addEventListener("click", () => {
-       if (totalRespostes < 10) nouAcord();
+      if (totalRespostes < 10) nouAcord();
     });
 
     inputResposta.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if(!respostaJaComprovada) {
-            comprovar();
+        if (!respostaJaComprovada) {
+          comprovar();
         } else {
-            btnSeguent.click();
+          btnSeguent.click();
         }
       }
     });
 
     window.onload = () => {
-      soBenvinguda.play().catch(() => {});
+      soBenvinguda.play().catch(() => { });
       nouAcord();
     };
   </script>
 </body>
+
 </html>
